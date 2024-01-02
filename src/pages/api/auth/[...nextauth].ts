@@ -15,7 +15,6 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
     CredentialsProvider({
-
       name: "Credentials",
 
       credentials: {
@@ -23,22 +22,29 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials, req) {
-
         const user = { id: "1", name: "J Smith", email: "jsmith@example.com" };
 
         if (user) {
- 
           return user;
         } else {
-
           return null;
-
         }
       },
     }),
   ],
   session: {
     strategy: "jwt",
+  },
+  callbacks: {
+    async jwt({ token, user }) {
+        console.log('token',token)
+        console.log('user',user)
+      return { ...token, ...user };
+    },
+    async session({ session, token }) {
+      session.user = token;
+      return session;
+    },
   },
 };
 

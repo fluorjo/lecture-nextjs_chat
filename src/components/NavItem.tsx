@@ -5,6 +5,7 @@ import React from "react";
 const NavItem = ({ mobile }: { mobile?: boolean }) => {
   const { data: session, status } = useSession();
   console.log({ session }, status);
+
   return (
     <ul
       className={`text-md justify-center flex w-full gap-4 ${
