@@ -22,7 +22,12 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials, req) {
-        const user = { id: "1", name: "J Smith", email: "jsmith@example.com" };
+        const user = {
+          id: "1",
+          name: "J Smith",
+          email: "jsmith@example.com",
+          role: "User",
+        };
 
         if (user) {
           return user;
@@ -35,10 +40,15 @@ export const authOptions: NextAuthOptions = {
   session: {
     strategy: "jwt",
   },
+  jwt: {
+    //middleware와 통일시켜야 함. 
+    secret: process.env.JWT_SECRET,
+    maxAge: 30*24*60*60 // 30 days
+  },
   callbacks: {
     async jwt({ token, user }) {
-        console.log('token',token)
-        console.log('user',user)
+      console.log("token", token);
+      console.log("user", user);
       return { ...token, ...user };
     },
     async session({ session, token }) {
