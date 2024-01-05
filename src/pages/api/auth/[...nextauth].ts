@@ -4,6 +4,7 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { PrismaClient } from "@prisma/client";
 import CredentialsProvider from "next-auth/providers/credentials";
 import prisma from "@/helpers/prismadb";
+import bcrypt from "bcryptjs";
 
 // authOptions를 다른 곳에서도 사용해야 하기 때문에 NextAuth와 분리함.
 export const authOptions: NextAuthOptions = {
@@ -17,22 +18,34 @@ export const authOptions: NextAuthOptions = {
       name: "Credentials",
 
       credentials: {
-        username: { label: "Username", type: "text", placeholder: "jsmith" },
+        email: { label: "Email", type: "text" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials, req) {
-        const user = {
-          id: "1",
-          name: "J Smith",
-          email: "jsmith@example.com",
-          role: "User",
-        };
-
-        if (user) {
-          return user;
-        } else {
-          return null;
+        if (!credentials?.email || !credentials?.password) {
+          throw new Error("Invalid credentials");
         }
+
+        const user = await prisma.user.findUnique({
+          where: {
+            email: credentials.email,
+          },
+        });
+
+        if (!user || !user?.hashedPassword) {
+          throw new Error("Invalid credentials");
+        }
+
+        const isCorrectPassword = await bcrypt.compare(
+          credentials.password,
+          user.hashedPassword
+        );
+
+        if (!isCorrectPassword) {
+          throw new Error("Invalid credentials");
+        }
+
+        return user;
       },
     }),
   ],
@@ -40,12 +53,12 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
   },
   jwt: {
-    //middleware와 통일시켜야 함. 
+    //middleware와 통일시켜야 함.
     secret: process.env.JWT_SECRET,
-    maxAge: 30*24*60*60 // 30 days
+    maxAge: 30 * 24 * 60 * 60, // 30 days
   },
-  pages:{
-  signIn:'/auth/login'
+  pages: {
+    signIn: "/auth/login",
   },
   callbacks: {
     async jwt({ token, user }) {
