@@ -3,8 +3,7 @@ import GoogleProvider from "next-auth/providers/google";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { PrismaClient } from "@prisma/client";
 import CredentialsProvider from "next-auth/providers/credentials";
-
-const prisma = new PrismaClient();
+import prisma from "@/helpers/prismadb";
 
 // authOptions를 다른 곳에서도 사용해야 하기 때문에 NextAuth와 분리함.
 export const authOptions: NextAuthOptions = {
