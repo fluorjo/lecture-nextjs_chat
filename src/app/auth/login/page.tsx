@@ -61,7 +61,7 @@ const LoginPage = () => {
           required
         ></Input>
 
-        <Button label="Register" />
+        <Button label="Login" />
         <div className={"text-center"}>
           <p className={"text-gray-400"}>
             Not a member?{" "}

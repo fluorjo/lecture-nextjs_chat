@@ -1,7 +1,10 @@
 import React from "react";
+import getCurrentUser from "../actions/getCurrentUser";
 
-const User = () => {
-  return <div>User</div>;
+const UserPage = async () => {
+  const userData = await getCurrentUser();
+  console.log(userData);
+  return <div>UserPage</div>;
 };
 
-export default User;
+export default UserPage;
